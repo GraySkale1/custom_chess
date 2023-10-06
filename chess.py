@@ -104,17 +104,31 @@ class board():
         self.first = 1
 
 
-    def lookup(self, target:piece):
+    def lookup(self, target:piece, disambiguator:list ) -> list:
+        """
+        Returns the index of the piece specified on chess_board
+        """
+        
+
+
         possible_index = []
         copy = self.chess_board
         #
-        while any(isinstance(sublist, target) in sublist for sublist in copy):
-            possible_index.append(index_2_obj(target)) #looks for position of first instance of object
+        while any(isinstance(sublist, target) in sublist for sublist in copy): #loops intil no instances of target are in copy
+            possible_index.append(index_2_obj(target))
             copy[possible_index[-1]] = None
+
+        
+        
+
+        return possible_index
     
     def _decode(self, notation:str) -> 'action':
-        plain_piece = notation[0]
-        position = 
+        """
+        Takes in standard chess notation as string and returns corresponding action
+        """
+        piece_key = notation[0]
+        target_pos = notation[-2::]
         
 
 
