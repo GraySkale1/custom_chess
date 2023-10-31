@@ -1,5 +1,4 @@
-import numpy
-
+import math
 
 class ChessException(Exception):
     pass
@@ -62,37 +61,12 @@ class knight(piece):
         self.jump = True
         self.identifier = 'n'
 
-
-
-class action():
-    def __init__(self, start_pos:list, end_pos:list, board:'board',  special:int = 0, exe:bool = False): #special denotes actions like castling, will have dictionary
-        if special == 0:
-            self.action_position = start_pos
-            self.final_position = end_pos
-            self.exe = exe
-
-            if board.chess_board[self.action_position] == 0: #checks if there is a valid piece assigned
-                raise ChessException("Action given null piece")
-            else:
-                self.action_piece = board.piece_d[board.chess_board[self.action_position]]
-
-        self.special = 0
-
-    def run(self, board:'board'):
-        if self.exe:
-            del board.chess_board[self.final_position]
-
-        board.chess_board[self.final_position] = board.chess_board[self.final_position]
-        board.chess_board[self.final_position] == None
-
-        self.action_piece.past.append(memory(self))
-
-class memory():
-    def __init__(self, mem:action):
-        self.start_pos = mem.action_position
-        self.end_pos = mem.final_position
-        self.kill = mem.exe
-
+class movement():
+    """describes a desired movement as a starting position and vector expressed in index form"""
+    def __init__(self, start:list, vector:list, exe:bool):
+        self.start = start
+        self.vector = vector
+        self.exe = exe #if move takes a piece or not
 
 
 class board():
@@ -100,38 +74,70 @@ class board():
         self.piece_d = {x().identifier: x for x in piece.__subclasses__()}
         self.current_pieces = []
         self.chess_board = [[None for x in range(8)] for y in range(8)]
+        self.piece_pos = [] #list of indexes of pices on board
         self.turn = 0
         self.first = 1
 
-
-    def lookup(self, target:piece, disambiguator:list ) -> list:
+    def _distance(self, vector:list):
         """
-        Returns the index of the piece specified on chess_board
+        returns rounded down distance from center of vector
         """
+        return math.sqrt(vector[0]**2 + vector[0]**2)
+                
         
+    def _val_vector(self, direct:piece, move:movement, path_back:bool = 0):
+        """
+        Checks if vector matches movement of piece outputs 1.
+        If path_back = 1, returns instead the function that matched the vector or outputs 0 if none found
+        """
+        for path in direct.xmovement:
+            if path(move.vector[0]) == move.vector[1] and self._distance(move.vector) <= direct.distance:
+                if path_back == 1:
+                    return path
+                return True
+            
+        for path in direct.ymovement:
+            if path(move.vector[1]) == move.vector[0] and self._distance(move.vector) <= direct.distance:
+                if path_back == 1:
+                    return path
+                return True
+            
+        if move.exe == 1:
+            for path in direct.xxmovement:
+                if path(move.vector[0]) == move.vector[1] and self._distance(move.vector) <= direct.distance:
+                    if path_back == 1:
+                        return path
+                    return True
+                
+            for path in direct.xymovement:
+                if path(move.vector[1]) == move.vector[0] and self._distance(move.vector) <= direct.distance:
+                    if path_back == 1:
+                        return path
+                    return True
+            
+        return 0
 
 
-        possible_index = []
-        copy = self.chess_board
-        #
-        while any(isinstance(sublist, target) in sublist for sublist in copy): #loops intil no instances of target are in copy
-            possible_index.append(index_2_obj(target))
-            copy[possible_index[-1]] = None
+    def piece_target_lookup(self, index:list,):
+        """
+        Returns indexes of pieces that can reach input index
+        """
+        for index in self.piece_pos:
+            _check()
+            
 
-        
-        
 
-        return possible_index
+
     
-    def _decode(self, notation:str) -> 'action':
+    def _decode(self, notation:str) -> list:
         """
-        Takes in standard chess notation as string and returns corresponding action
+        Takes in standard chess notation as string and returns a vector and starting position
         """
         piece_key = notation[0]
         target_pos = notation[-2::]
         
-
-
-
-
-
+    def _vector(self, start:list, target:list):
+        final = [0,0]
+        for i,value in enumerate(zip(start, target)):
+            final[i] = value[1] - value[0]
+        return final
