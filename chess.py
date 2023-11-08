@@ -83,47 +83,100 @@ class board():
         returns rounded down distance from center of vector
         """
         return math.sqrt(vector[0]**2 + vector[0]**2)
+    
+    def movement_val(self, move:movement) -> bool:
+        """
+        Returns True if movement is valid, returns False otherwise
+        """
+        if c_piece:=self._lookup(move.start, back=1) == False:
+            return False
+        
+        if 
+        
+
                 
         
     def _val_vector(self, direct:piece, move:movement, path_back:bool = 0):
+
         """
-        Checks if vector matches movement of piece outputs 1.
-        If path_back = 1, returns instead the function that matched the vector or outputs 0 if none found
+        Checks if disired movement of piece matches existing piece vector as bool.\n
+        If path_back = 1: returns the function that matched the vector or outputs 0 if none found
         """
-        for path in direct.xmovement:
-            if path(move.vector[0]) == move.vector[1] and self._distance(move.vector) <= direct.distance:
-                if path_back == 1:
-                    return path
-                return True
-            
-        for path in direct.ymovement:
-            if path(move.vector[1]) == move.vector[0] and self._distance(move.vector) <= direct.distance:
-                if path_back == 1:
-                    return path
-                return True
-            
-        if move.exe == 1:
-            for path in direct.xxmovement:
+        if move.axis == 0:
+            for path in direct.xmovement:
                 if path(move.vector[0]) == move.vector[1] and self._distance(move.vector) <= direct.distance:
                     if path_back == 1:
                         return path
                     return True
-                
-            for path in direct.xymovement:
+        
+        else:
+            for path in direct.ymovement:
                 if path(move.vector[1]) == move.vector[0] and self._distance(move.vector) <= direct.distance:
                     if path_back == 1:
                         return path
                     return True
             
+        if move.exe == 1:
+            if move.axis == 0:
+                for path in direct.xxmovement:
+                    if path(move.vector[0]) == move.vector[1] and self._distance(move.vector) <= direct.distance:
+                        if path_back == 1:
+                            return path
+                        return True
+            
+            else:
+                for path in direct.xymovement:
+                    if path(move.vector[1]) == move.vector[0] and self._distance(move.vector) <= direct.distance:
+                        if path_back == 1:
+                            return path
+                        return True
+            
         return 0
 
+    def _jump_check(self, move:movement, obj:piece) -> bool:
+        """
+        Checks if there is a piece between movement
+        """
+        if obj.jump == True:
+            possible_piece = self._lookup(move.start + move.vector, back=1)
+            if isinstance(possible_piece, piece) and :
+                return possible_piece.team^obj.team
+            
 
-    def piece_target_lookup(self, index:list,):
+
+        obsticles = 0
+        for px in range(move.vector[0]): #iterates across x of vector
+            for py in range(move.vector[1]): #iterates across y
+                pos = move.start + [px,py]
+                obsticles += self._lookup(pos)
+        
+        if obsticles == 0:
+            return True
+        else:
+            return False
+
+
+
+    def _lookup(self, index:list, back:bool = 0):
+        """
+        checks if piece exists in the indexed position.\n
+        if back = 1, returns instead the piece it indexes
+        """
+        if isinstance(self.chess_board[index], piece):
+            if back == 1:
+                return self.chess_board[index]
+            else:
+                return True
+        else:
+            return False
+
+
+    def piece_lookup(self, index:list,):
         """
         Returns indexes of pieces that can reach input index
         """
         for index in self.piece_pos:
-            _check()
+           self._val_vector()
             
 
 
