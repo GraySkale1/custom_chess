@@ -72,7 +72,6 @@ class movement():
 class board():
     def __init__(self):
         self.piece_d = {x().identifier: x for x in piece.__subclasses__()}
-        self.current_pieces = []
         self.chess_board = [[None for x in range(8)] for y in range(8)]
         self.piece_pos = [] #list of indexes of pices on board
         self.turn = 0
@@ -84,6 +83,49 @@ class board():
         """
         return math.sqrt(vector[0]**2 + vector[0]**2)
     
+    def full_decode(self, notation:str):
+        """Takes in chess notation of a move and creates a 'movement' object that describes it"""
+        notation = notation.lower()
+        char_piece = str(notation[0])
+        target = self._notate_to_index(notation[-2::])
+        execute = False
+
+        if 'x' in notation:
+            execute = True
+            notation.replace("x", "")
+
+        if len(notation) == 5:
+            start = self._notate_to_index(notation[0:-2])
+
+        if len(notation) == 4:
+            for pos in self.piece_pos:
+                if notation[1] in pos and isinstance(self.chess_board[pos], self.piece_d[char_piece]):
+                    start = pos
+                    break
+        
+        #convert these vars into a 'movement' class !!!!!!!!!!!!!!!!!!!!!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+            
+    
+    def place(self, notation:str, team:bool):
+        """Takes in chess notation of: [piece][postion] and places piece at that board. \n
+        team: 0 is black, 1 is white. \n
+        **pieces can be overwritten using this function**"""
+
+        piece_char = notation[0].lower()
+        position = self._notate_to_index(notation[-2::])
+
+        self.chess_board[position] = self.piece_d[piece_char]()
+
+        if position not in self.piece_pos:
+            self.piece_pos.append(position)
+
+
+
+
+        self.current_pieces.append()
+    
     def movement_val(self, move:movement) -> bool:
         """
         Returns True if movement is valid, returns False otherwise
@@ -91,8 +133,13 @@ class board():
         if c_piece:=self._lookup(move.start, back=1) == False:
             return False
         
-        if 
+        if self._val_vector(direct=c_piece, move=move) == False:
+            return False
         
+        if self._jump_check(move=move, obj=c_piece) == False:
+            return False
+        
+        return True
 
                 
         
@@ -139,7 +186,9 @@ class board():
         """
         if obj.jump == True:
             possible_piece = self._lookup(move.start + move.vector, back=1)
-            if isinstance(possible_piece, piece) and :
+            if isinstance(possible_piece, piece) == 0:
+                return True
+            else:
                 return possible_piece.team^obj.team
             
 
@@ -180,6 +229,11 @@ class board():
             
 
 
+    def _notate_to_index(notation:str) -> list:
+        """Takes in position in chess notation and outputs index on board"""
+        part1 = 8 - int(notation[1])
+        part2 = ord(notation[0]) - ord('a')
+        return [part1, part2]
 
     
     def _decode(self, notation:str) -> list:
@@ -188,6 +242,7 @@ class board():
         """
         piece_key = notation[0]
         target_pos = notation[-2::]
+        raise NotImplementedError
         
     def _vector(self, start:list, target:list):
         final = [0,0]
