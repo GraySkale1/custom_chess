@@ -30,16 +30,22 @@ class board():
         """Takes in chess notation of a move and creates a 'movement' object that describes it"""
         notation = notation.lower()
 
+        if 'x' in notation:
+            execute = True
+            notation = notation.replace("x", "") #removes x to make interpretion of disambiguators easier
+
         if notation[0] not in self.piece_d.keys():
             notation = 'p' + notation
+
+        elif len(notation) == 2:
+            notation = 'p' + notation
+
 
         char_piece = notation[0]
         target = self._notate_to_index(notation[-2::])
         execute = False
-        
-        if 'x' in notation:
-            execute = True
-            notation = notation.replace("x", "") #removes x to make interpretion of disambiguators easier
+        start = None
+
 
         if len(notation) == 5: #checks if disambiguator gives full corrdinate
             start = self._notate_to_index(notation[1:-2])
@@ -51,12 +57,12 @@ class board():
                     if isinstance(self.chess_board[p1][p2], self.piece_d[char_piece]):
                         start = [p1, p2]
                         break
-            else:
-                raise ChessException()
         
+        if start == None:
+            return 0
         vec = self._vector(start=start, target=target)
             
-        return movement(start=start, vector=vec, exe=execute, team=self.turn)
+        return movement(start=start, vector=vec, exe=execute, team=self.turn % 2)
         
             
     
@@ -98,6 +104,15 @@ class board():
         if move.exe == True:
             print(f'{temp.identifier} takes {self.chess_board[t1][t2].identifier}')
 
+        if t1 == temp.team * 7: #funny epic hack
+            premotion = temp.promote()
+            if (premotion != 0) and (premotion.lower() in self.piece_d.keys()):
+                promotion_shell = self.piece_d[premotion.lower()]()
+                promotion_shell.past = temp.past
+                temp = promotion_shell
+                temp.past.append('promote placeholder')
+
+
         self.chess_board[t1][t2] = temp
 
         p = self.piece_pos.index(move.start)
@@ -110,10 +125,36 @@ class board():
     
 
     
-    def piece_lookup(self, index:list):
+    def piece_lookup(self, target:list, team:bool):
         """
-        Returns indexes of pieces that can reach input index
+        generator that returns movement objects of pieces that can be moved to that position
         """
+        takes = False
+        if issubclass(self.chess_board[target[0]][target[1]], piece):
+            takes = True
+            e_team = self.chess_board[target[0]][target[1]].team
+
+
+        for piece_index in [x for x in self.piece_pos if x.team == team]:
+            vector = self._vector(piece_index)
+            if takes == True:
+
+                #checks if teams of pieces are different, if they are the same, there are no possible move so raise error
+                if e_team^team == 0: 
+                    raise ChessException('Cannot find move that overwrites piece on same team')
+                else:
+                    temp =  movement(start=piece_index, vector=vector, exe=1, team=team)
+            else:
+                temp = movement(start=piece_index, vector=vector, exe=0, team=team)
+
+            if self.movement_val(temp) == True:
+                yield temp
+
+            
+
+            
+
+
         raise NotImplementedError
 
 
@@ -122,6 +163,9 @@ class board():
         """
         Returns True if movement is valid, returns False otherwise
         """
+        if isinstance(move, movement) == 0:
+            return False
+        
         c_piece = self._lookup(move.start, back=1)
         if c_piece == False:
             return False
@@ -157,13 +201,23 @@ class board():
             
 
         obsticles = 0
-        for px in range(move.vector[0]+1): #iterates across x of vector
-            for py in range(move.vector[1]+1): #iterates across y
-                pos = [sum(x) for x in zip(move.start,[px,py])]
+        px = py = 0
+        pxp = move.vector[0] / abs(move.vector[0]) #determines either to add -1 or 1
+        pyp = move.vector[1] / abs(move.vector[1])
+        for i in max(move.vector):
+            px += pxp
+            py += pyp
+            if px > move.vector[0]:
+                px -= pxp
+            if py > move.vector[1]:
+                py -= pyp
 
-                lookup_data = self._lookup(pos, back=1)
-                if lookup_data != True and id(lookup_data) != id(obj):
-                    obsticles += 1
+
+            pos = [sum(x) for x in zip(move.start,[px,py])]
+
+            lookup_data = self._lookup(pos, back=1)
+            if lookup_data != True and id(lookup_data) != id(obj):
+                obsticles += 1
         
         if obsticles == 0:
             return True
@@ -178,7 +232,7 @@ class board():
         for row in self.chess_board:
             for element in row:
                 if issubclass(type(element), piece) and repr == True:
-                    if element.team ^ self.turn == 0: #capitalises output if piece can moved this turn
+                    if element.team ^ (self.turn % 2) == 0: #capitalises output if piece can moved this turn
                         yield element.identifier.upper()
                     else:
                         yield element.identifier

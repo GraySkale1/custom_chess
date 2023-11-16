@@ -7,12 +7,14 @@ class piece():
         self.xymovement = []
         self.distance = 999
         self.jump = False
-        self.promote = False
-        self.team = 1   # 1 - white, 0 - black
+        self.team = 0   # 0 - white, 1 - black
         self.identifier = ''
 
     def m_add(self, move):
         self.past.append(move)
 
     def remove(self):
+        return 0
+    
+    def promote(self):
         return 0

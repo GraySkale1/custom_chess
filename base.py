@@ -8,12 +8,15 @@ class pawn(piece):
         self.ymovement = [lambda y: 0 if y < 0 and self.team == 0 else 999, lambda y: 0 if y > 0 and self.team == 1 else 999]
         self.xxmovement = [lambda x: -abs(x) if self.team == 0 else 999, lambda x: abs(x) if self.team == 1 else 999]
         self.distance = 2
-        self.promote = True
         self.identifier = 'p'
 
     def m_add(self, move_desc):
         super().m_add(move_desc)
         self.distance = 1
+
+    def promote(self):
+        promote_piece = str(input('Promote piece: '))
+        return promote_piece
 
 class rook(piece):
     def __init__(self):
