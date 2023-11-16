@@ -1,65 +1,12 @@
 import math
-import random
-import copy
+import base
+from piece_class import piece
 
 class ChessException(Exception):
     def __init__(self, message):
         self.message = message
 
 
-
-class piece():
-    def __init__(self):
-        self.xmovement = []
-        self.ymovement = []
-        self.past = []
-        self.xxmovement = []
-        self.xymovement = []
-        self.distance = 999
-        self.jump = False
-        self.promote = False
-        self.team = 1   # 1 - white, 0 - black
-        self.identifier = ''
-
-    def m_add(self, move:'movement'):
-        self.past.append(move)
-
-
-            
-class pawn(piece):
-    def __init__(self):
-        super().__init__()
-        self.ymovement = [lambda y: 0 if y < 0 and self.team == 0 else 999, lambda y: 0 if y > 0 and self.team == 1 else 999]
-        self.xxmovement = [lambda x: -abs(x) if self.team == 1 else 999, lambda x: abs(x) if self.team == 0 else 999]
-        self.distance = 2
-        self.promote = True
-        self.identifier = 'p'
-
-    def m_add(self, move_desc):
-        super().m_add(move_desc)
-        self.distance = 1
-
-class rook(piece):
-    def __init__(self):
-        super().__init__()
-        self.xmovement = [lambda x: 0]
-        self.ymovement = [lambda y: 0]
-        self.identifier = 'r'
-
-class bishop(piece):
-    def __init__(self):
-        super().__init__()
-        self.xmovement = [lambda x: x, lambda x: -x]
-        self.identifier = 'b'
-
-class knight(piece):
-    def __init__(self):
-        super().__init__()
-        self.xmovement = [lambda x: x*2, lambda x: -x*2]
-        self.ymovement = [lambda y: y*2, lambda y: -y*2]
-        self.distance = 1
-        self.jump = True
-        self.identifier = 'n'
 
 class movement():
     """describes a desired movement as a starting position and vector expressed in index form"""
@@ -86,13 +33,13 @@ class board():
         if notation[0] not in self.piece_d.keys():
             notation = 'p' + notation
 
-        char_piece = str(notation[0])
+        char_piece = notation[0]
         target = self._notate_to_index(notation[-2::])
         execute = False
         
         if 'x' in notation:
             execute = True
-            notation.replace("x", "") #removes x to make interpretion of disambiguators easier
+            notation = notation.replace("x", "") #removes x to make interpretion of disambiguators easier
 
         if len(notation) == 5: #checks if disambiguator gives full corrdinate
             start = self._notate_to_index(notation[1:-2])
@@ -147,13 +94,17 @@ class board():
         self.chess_board[move.start[0]][move.start[1]] = 0
 
         t1, t2 = self._devectorise(start=move.start, vector=move.vector) #finds end point of move
+
+        if move.exe == True:
+            print(f'{temp.identifier} takes {self.chess_board[t1][t2].identifier}')
+
         self.chess_board[t1][t2] = temp
 
         p = self.piece_pos.index(move.start)
         self.piece_pos[p] = [t1,t2] # updates position of piece on piece list
 
-        self.turn += 1
 
+        self.turn += 1
 
         return True
     
