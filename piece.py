@@ -2,16 +2,15 @@ import chess
 
 test = chess.board()
 
-
-
-test.place('nd6', 1)
-test.place('rh4', 0)
-test.place('g3',1)
-test.place('a7',1)
+test.place(notation='Rb4', team=0)
+test.place(notation='c4', team=0)
 
 print(test)
 
 while True:
-    operation = str(input('op:'))
-    test.move(operation)
+    note = str(input("Make move: "))
+    encoded_move = test.full_decode(note)
+    test.execute(encoded_move)
+    test.turn = 0
+
     print(test)
