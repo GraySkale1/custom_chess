@@ -5,7 +5,7 @@ test = chess.board()
 test.place(notation='Rb4', team=0)
 test.place(notation='c4', team=0)
 test.place(notation='nb5', team=0)
-test.place('bb6', 0)
+test.place('bc5', 0)
 
 print(test)
 

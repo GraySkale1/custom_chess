@@ -34,8 +34,7 @@ class bishop(piece):
 class knight(piece):
     def __init__(self):
         super().__init__()
-        self.xmovement = [lambda x: x*2, lambda x: -x*2]
-        self.ymovement = [lambda y: y*2, lambda y: -y*2]
-        self.distance = 1
+        self.xmovement = [lambda x: 2*(x**2), lambda x: -2*(x*2), lambda x: 0.25*(x**2), lambda x: -0.25*(x**2)]
+        self.distance = 3
         self.jump = True
         self.identifier = 'n'

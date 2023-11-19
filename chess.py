@@ -170,10 +170,11 @@ class board():
         if c_piece == False:
             return False
         
-        if self._val_vector(direct=c_piece, move=move) == False:
+        vector = self._val_vector(direct=c_piece, move=move, path_back=1)
+        if vector == False:
             return False
         
-        if self._jump_check(move=move, obj=c_piece) == False:
+        if self._jump_check(move=move, obj=c_piece, equation=vector) == False:
             return False
         
         return True
@@ -188,36 +189,41 @@ class board():
 
 
 
-    def _jump_check(self, move:movement, obj:piece) -> bool:
+    def _jump_check(self, move:movement, obj:piece, equation:'function') -> bool:
         """
         Checks if there is a piece between movement
         """
         if obj.jump == True:
-            possible_piece = self._lookup(move.start + move.vector, back=1)
-            if issubclass(type(possible_piece), piece) == 0:
+            target = self._devectorise(move.start, move.vector)
+            possible_piece = self._lookup(target, back=1)
+            if possible_piece == 0:
                 return True
             else:
-                return possible_piece.team^obj.team
+                # only returns true if teams are different using xor
+                return possible_piece.team ^ obj.team
             
 
         obsticles = 0
-        px = py = 0
-        pxp = move.vector[0] / abs(move.vector[0]) #determines either to add -1 or 1
-        pyp = move.vector[1] / abs(move.vector[1])
-        for i in max(move.vector):
-            px += pxp
-            py += pyp
-            if px > move.vector[0]:
-                px -= pxp
-            if py > move.vector[1]:
-                py -= pyp
 
+        if equation in obj.xmovement or equation in obj.xxmovement: #determines which coordinate has a many to one relationship
+            index = 0 
+        else:
+            index = 1
 
-            pos = [sum(x) for x in zip(move.start,[px,py])]
+        #index = 0 means that postion one of the index should be iterated and vice versa
+        
+
+        for i in range(max(move.vector)):
+
+            px = i if index == 0 else equation(i)
+            py = equation(i) if index == 0 else i
+
+            pos = [sum(x) for x in zip([px,py], move.start)]
 
             lookup_data = self._lookup(pos, back=1)
-            if lookup_data != True and id(lookup_data) != id(obj):
-                obsticles += 1
+            if lookup_data != False:
+                if id(lookup_data) != id(obj) :
+                    obsticles += 1
         
         if obsticles == 0:
             return True
