@@ -1,5 +1,6 @@
 import pyglet
 from pyglet.window import key
+import levels
 
 display = pyglet.canvas.Display()
 screen = display.get_default_screen()
@@ -17,17 +18,14 @@ def on_draw():
     for sprite in sprites:
         sprite.draw()
         
-
-background = pyglet.image.load("assets\\misc\\default_texture.png")
-back_sprite = pyglet.sprite.Sprite(background)
-
-back_sprite.scale_x = game.width / back_sprite.width
-back_sprite.scale_y = game.height / back_sprite.height
-
-back_sprite.x = (WIDTH - back_sprite.width) / 2
-back_sprite.y = (HEIGHT - back_sprite.height) / 2
+back_sprite = levels.background(game, "assets\\backgrounds\\chessboard.png", fit=1)
+#button = pyglet.image.load("assets\\buttons\\menu_play.png")
+#button_sprite = pyglet.sprite.Sprite(button)
+#button_sprite.scale = 2
+#button_sprite = levels.move(game, button_sprite, [0.5,0.5])
 
 sprites.append(back_sprite)
+#sprites.append(button_sprite)
 
 pyglet.app.run()
 

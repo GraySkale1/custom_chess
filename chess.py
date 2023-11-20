@@ -50,13 +50,16 @@ class board():
         if len(notation) == 5: #checks if disambiguator gives full corrdinate
             start = self._notate_to_index(notation[1:-2])
 
-        if len(notation) == 4:
+        elif len(notation) == 4:
             for p1, p2 in self.piece_pos:
                 # checks if digit in disambiguator appears in any of the current piece position then checks if it is the described piece
                 if self._notate_to_index(notation[1],single=True) in [p1, p2]:
                     if isinstance(self.chess_board[p1][p2], self.piece_d[char_piece]):
                         start = [p1, p2]
                         break
+
+        else:
+            for p in self.piece_lookup(target=target)
         
         if start == None:
             return 0
@@ -125,7 +128,7 @@ class board():
     
 
     
-    def piece_lookup(self, target:list, team:bool):
+    def piece_lookup(self, target:list):
         """
         generator that returns movement objects of pieces that can be moved to that position
         """
@@ -135,27 +138,16 @@ class board():
             e_team = self.chess_board[target[0]][target[1]].team
 
 
-        for piece_index in [x for x in self.piece_pos if x.team == team]:
+        for piece_index in self.piece_pos:
             vector = self._vector(piece_index)
             if takes == True:
-
-                #checks if teams of pieces are different, if they are the same, there are no possible move so raise error
-                if e_team^team == 0: 
-                    raise ChessException('Cannot find move that overwrites piece on same team')
-                else:
-                    temp =  movement(start=piece_index, vector=vector, exe=1, team=team)
+                temp =  movement(start=piece_index, vector=vector, exe=1, team=)
             else:
                 temp = movement(start=piece_index, vector=vector, exe=0, team=team)
 
             if self.movement_val(temp) == True:
                 yield temp
 
-            
-
-            
-
-
-        raise NotImplementedError
 
 
     
