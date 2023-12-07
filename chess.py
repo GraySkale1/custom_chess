@@ -15,20 +15,20 @@ class movement():
         self.vector = vector
         self.team = team
         self.exe = exe #if move takes a piece or not
-
+        self.validated = False
 
 class board():
     def __init__(self):
         self.piece_d = {x().identifier: x for x in piece.__subclasses__()}
         self.chess_board = [[0 for x in range(8)] for y in range(8)]
         self.piece_pos = [] #list of indexes of pices on board
-        self.turn = 0
-        self.first = 1
-    
+        self.turn = 0 #0 -> white, 1 -> black
+
 
     def full_decode(self, notation:str):
         """Takes in chess notation of a move and creates a 'movement' object that describes it"""
         notation = notation.lower()
+        execute = False
 
         if 'x' in notation:
             execute = True
@@ -43,9 +43,11 @@ class board():
 
         char_piece = notation[0]
         target = self._notate_to_index(notation[-2::])
-        execute = False
         start = None
 
+        piece_list = self.piece_lookup(target=target, piece_obj=self.piece_d[char_piece])
+        if piece_list == []:
+            return False
 
         if len(notation) == 5: #checks if disambiguator gives full corrdinate
             start = self._notate_to_index(notation[1:-2])
@@ -58,8 +60,9 @@ class board():
                         start = [p1, p2]
                         break
 
-        else:
-            for p in self.piece_lookup(target=target)
+        elif piece_list != False:
+            if len(piece_list) == 1:
+                return piece_list[0]
         
         if start == None:
             return 0
@@ -87,12 +90,44 @@ class board():
         if [p1, p2] not in self.piece_pos:
             self.piece_pos.append([p1, p2])
 
+    def reset(self):
+        """
+        Returns board to starting position
+        """
+        self.__init__()
+        for char in ['a','b','c','d','e','f','g','h']: # places pawns
+            self.place(char + "2", 0)
+            self.place(char + "7", 1)
+
+
+        self.place('Ra1',0)
+        self.place('Nb1',0)
+        self.place('Bc1',0)
+        self.place('Qd1',0)
+        self.place('Ke1',0)
+        self.place('Bf1',0)
+        self.place('Ng1',0)
+        self.place('Rh1',0)
+
+        self.place('Ra8',1)
+        self.place('Nb8',1)
+        self.place('Bc8',1)
+        self.place('Qd8',1)
+        self.place('Ke8',1)
+        self.place('Bf8',1)
+        self.place('Ng8',1)
+        self.place('Rh8',1)
+
 
     def execute(self, move:movement):
         """Executes movement object on board \n
         If move is immpossible, returns false, otherwise returns true
         """
-        if self.movement_val(move) != True:
+        if move.validated != True:
+            move.validated = self.movement_val(move)
+
+
+        if move.validated != True:
             print("Invalid chess move")
             return False
         
@@ -103,9 +138,6 @@ class board():
         self.chess_board[move.start[0]][move.start[1]] = 0
 
         t1, t2 = self._devectorise(start=move.start, vector=move.vector) #finds end point of move
-
-        if move.exe == True:
-            print(f'{temp.identifier} takes {self.chess_board[t1][t2].identifier}')
 
         if t1 == temp.team * 7: #funny epic hack
             premotion = temp.promote()
@@ -118,9 +150,18 @@ class board():
 
         self.chess_board[t1][t2] = temp
 
+
+
+
+
+
+
+
         p = self.piece_pos.index(move.start)
         self.piece_pos[p] = [t1,t2] # updates position of piece on piece list
 
+        if move.exe == True:
+            print(f'{temp.identifier} takes {self.chess_board[t1][t2].identifier}')
 
         self.turn += 1
 
@@ -128,25 +169,24 @@ class board():
     
 
     
-    def piece_lookup(self, target:list):
+    def piece_lookup(self, target:list, piece_obj:piece = piece):
         """
-        generator that returns movement objects of pieces that can be moved to that position
+        function that returns all positions as indexes that can reach target pos
         """
-        takes = False
-        if issubclass(self.chess_board[target[0]][target[1]], piece):
-            takes = True
-            e_team = self.chess_board[target[0]][target[1]].team
+        final_move = []
+
+        for p1,p2 in [x for x in self.piece_pos if issubclass(type(self.chess_board[x[0]][x[1]]), piece_obj)]:
+            if p1 == 1:
+                pass
+            vector = self._vector([p1,p2],target)
+            exe = issubclass(type(self.chess_board[target[0]][target[1]]), piece)
+            test = movement(start=[p1,p2], vector=vector, exe=exe, team=self.turn % 2)
+            if self.movement_val(test) == True:
+                test.validated = True
+                final_move.append(test)
 
 
-        for piece_index in self.piece_pos:
-            vector = self._vector(piece_index)
-            if takes == True:
-                temp =  movement(start=piece_index, vector=vector, exe=1, team=)
-            else:
-                temp = movement(start=piece_index, vector=vector, exe=0, team=team)
-
-            if self.movement_val(temp) == True:
-                yield temp
+        return final_move
 
 
 
@@ -162,11 +202,11 @@ class board():
         if c_piece == False:
             return False
         
-        vector = self._val_vector(direct=c_piece, move=move, path_back=1)
-        if vector == False:
+        func_vector = self._val_vector(direct=c_piece, move=move, path_back=1)
+        if func_vector == False:
             return False
         
-        if self._jump_check(move=move, obj=c_piece, equation=vector) == False:
+        if self._jump_check(move=move, obj=c_piece, equation=func_vector) == False:
             return False
         
         return True
@@ -207,8 +247,11 @@ class board():
 
         for i in range(max(move.vector)):
 
-            px = i if index == 0 else equation(i)
-            py = equation(i) if index == 0 else i
+            px = equation(i) if index == 0 else i
+            py = equation(i) if index == 1 else i
+
+            if px >= 8 or py >= 8:
+                continue
 
             pos = [sum(x) for x in zip([px,py], move.start)]
 
@@ -253,7 +296,7 @@ class board():
         always returns false if no piece is found
         """
         p1, p2 = index
-        if issubclass(type(self.chess_board[p1][p2]), piece):
+        if issubclass(type(self.chess_board[p1][p2]), piece) and self.chess_board[p1][p2].team == self.turn % 2:
             if back == 1:
                 return self.chess_board[p1][p2]
             else:

@@ -12,7 +12,7 @@ class pawn(piece):
 
     def m_add(self, move_desc):
         super().m_add(move_desc)
-        self.distance = 1
+        self.distance = 1.5
 
     def promote(self):
         promote_piece = str(input('Promote piece: '))
@@ -34,7 +34,22 @@ class bishop(piece):
 class knight(piece):
     def __init__(self):
         super().__init__()
-        self.xmovement = [lambda x: 2*(x**2), lambda x: -2*(x*2), lambda x: 0.25*(x**2), lambda x: -0.25*(x**2)]
+        self.xmovement = [lambda x: 2*(x**2), lambda x: -2*(x**2), lambda x: 0.25*(x**2), lambda x: -0.25*(x**2)]
         self.distance = 3
         self.jump = True
         self.identifier = 'n'
+
+class Queen(piece):
+    def __init__(self):
+        super().__init__()
+        self.xmovement = [lambda x: x, lambda x: -x, lambda x: 0]
+        self.ymovement = [lambda y: 0]
+        self.identifier = 'q'
+
+class King(piece):
+    def __init__(self):
+        super().__init__()
+        self.xmovement = [lambda x: x, lambda x: -x, lambda x: 0]
+        self.ymovement = [lambda y: 0]
+        self.distance = 1.5
+        self.identifier = 'k'

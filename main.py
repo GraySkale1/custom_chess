@@ -11,6 +11,7 @@ HEIGHT = screen.height
 sprites = []
 
 game = pyglet.window.Window(width=WIDTH, height=HEIGHT)
+game.set_fullscreen(True)
 
 @game.event
 def on_draw():
@@ -19,10 +20,8 @@ def on_draw():
         sprite.draw()
         
 back_sprite = levels.background(game, "assets\\backgrounds\\chessboard.png", fit=1)
-#button = pyglet.image.load("assets\\buttons\\menu_play.png")
-#button_sprite = pyglet.sprite.Sprite(button)
-#button_sprite.scale = 2
-#button_sprite = levels.move(game, button_sprite, [0.5,0.5])
+spacing_height = back_sprite.height / 8
+spacing_width = back_sprite.width / 8
 
 sprites.append(back_sprite)
 #sprites.append(button_sprite)
