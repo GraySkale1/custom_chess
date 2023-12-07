@@ -24,3 +24,5 @@ class piece():
     
     def promote(self):
         return 0
+    
+    def sprite(self):

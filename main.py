@@ -1,6 +1,7 @@
 import pyglet
 from pyglet.window import key
 import levels
+import chess
 
 display = pyglet.canvas.Display()
 screen = display.get_default_screen()
@@ -19,12 +20,15 @@ def on_draw():
     for sprite in sprites:
         sprite.draw()
         
-back_sprite = levels.background(game, "assets\\backgrounds\\chessboard.png", fit=1)
+back_sprite = levels.background(game, "assets\\backgrounds\\chessboard.png", fit=True)
 spacing_height = back_sprite.height / 8
 spacing_width = back_sprite.width / 8
 
 sprites.append(back_sprite)
-#sprites.append(button_sprite)
+
+game_board = chess.board()
+game_board.reset()
+
 
 pyglet.app.run()
 
