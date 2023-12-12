@@ -1,4 +1,4 @@
-
+import os
 
 
 class piece():
@@ -26,3 +26,16 @@ class piece():
         return 0
     
     def sprite(self):
+        """returns path to image asscoiated with piece"""
+        string = self.identifier.upper()
+        if self.team == 0:
+            string += 'W'
+        else:
+            string += 'B'
+
+        if os.path.isfile(f'assets\\pieces\\{string}.png'):
+            return f'assets\\pieces\\{string}.png'
+        else:
+            return 'assets\\misc\\default_texture.png'
+
+        

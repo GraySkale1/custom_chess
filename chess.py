@@ -90,11 +90,11 @@ class board():
         if [p1, p2] not in self.piece_pos:
             self.piece_pos.append([p1, p2])
 
-    def _sprite_raw(self) -> tuple:
-        """returns unsorted 2d tuple of pieces along with their index on the board"""
-        final_tup = tuple()
+    def _sprite(self) -> list:
+        """generator that returns piece images dirs along with their position relative to (0,0) of the chess board sprite"""
         for p1,p2 in self.piece_pos:
-            final_tup += (self.chess_board[p1][p2], [p1,p2])
+            yield [self.chess_board[p1][p2].sprite(), [7 - p1,p2]]
+
 
     def reset(self):
         """
