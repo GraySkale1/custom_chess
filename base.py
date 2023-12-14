@@ -2,7 +2,7 @@ from piece_class import piece
 
 
             
-class pawn(piece):
+class Pawn(piece):
     def __init__(self):
         super().__init__()
         self.ymovement = [lambda y: 0 if y < 0 and self.team == 0 else 999, lambda y: 0 if y > 0 and self.team == 1 else 999]
@@ -18,20 +18,20 @@ class pawn(piece):
         promote_piece = str(input('Promote piece: '))
         return promote_piece
 
-class rook(piece):
+class Rook(piece):
     def __init__(self):
         super().__init__()
         self.xmovement = [lambda x: 0]
         self.ymovement = [lambda y: 0]
         self.identifier = 'r'
 
-class bishop(piece):
+class Bishop(piece):
     def __init__(self):
         super().__init__()
-        self.xmovement = [lambda x: x, lambda x: -x]
+        self.xmovement = [lambda x: abs(x), lambda x: -abs(x)]
         self.identifier = 'b'
 
-class knight(piece):
+class Knight(piece):
     def __init__(self):
         super().__init__()
         self.xmovement = [lambda x: 2*(x**2), lambda x: -2*(x**2), lambda x: 0.25*(x**2), lambda x: -0.25*(x**2)]
@@ -42,14 +42,14 @@ class knight(piece):
 class Queen(piece):
     def __init__(self):
         super().__init__()
-        self.xmovement = [lambda x: x, lambda x: -x, lambda x: 0]
+        self.xmovement = [lambda x: abs(x), lambda x: -abs(x), lambda x: 0]
         self.ymovement = [lambda y: 0]
         self.identifier = 'q'
 
 class King(piece):
     def __init__(self):
         super().__init__()
-        self.xmovement = [lambda x: x, lambda x: -x, lambda x: 0]
+        self.xmovement = [lambda x: abs(x), lambda x: -abs(x), lambda x: 0]
         self.ymovement = [lambda y: 0]
         self.distance = 1.5
         self.identifier = 'k'

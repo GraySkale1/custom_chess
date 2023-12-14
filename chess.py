@@ -45,7 +45,7 @@ class board():
         target = self._notate_to_index(notation[-2::])
         start = None
 
-        piece_list = self.piece_lookup(target=target, piece_obj=self.piece_d[char_piece])
+        piece_list = self.target_lookup(target=target, piece_obj=self.piece_d[char_piece])
         if piece_list == []:
             return False
 
@@ -153,21 +153,16 @@ class board():
                 temp = promotion_shell
                 temp.past.append('promote placeholder')
 
+        if move.exe == True:
+            print(f'{type(temp).__name__} takes {type(self.chess_board[t1][t2]).__name__}')
 
         self.chess_board[t1][t2] = temp
-
-
-
-
-
-
 
 
         p = self.piece_pos.index(move.start)
         self.piece_pos[p] = [t1,t2] # updates position of piece on piece list
 
-        if move.exe == True:
-            print(f'{temp.identifier} takes {self.chess_board[t1][t2].identifier}')
+        
 
         self.turn += 1
 
@@ -175,7 +170,7 @@ class board():
     
 
     
-    def piece_lookup(self, target:list, piece_obj:piece = piece):
+    def target_lookup(self, target:list, piece_obj:piece = piece):
         """
         function that returns all positions as indexes that can reach target pos
         """
@@ -201,7 +196,10 @@ class board():
         """
         Returns True if movement is valid, returns False otherwise
         """
-        if isinstance(move, movement) == 0:
+        if isinstance(move, movement) == 0 or move.vector == [0,0]:
+            return False
+        
+        if move.team != self.turn % 2:
             return False
         
         c_piece = self._lookup(move.start, back=1)
@@ -224,6 +222,22 @@ class board():
             final += '|' + value
         
         return final
+    
+    def _absmax(self, iterable:list):
+        """
+        Returns the item with maximum magnitude
+        """
+        negative = False
+        w_max = 0
+        for it in iterable:
+            if abs(it) > w_max:
+                w_max = abs(it)
+                if abs(it) > it:
+                    negative = True
+                else:
+                    negative = False
+
+        return w_max * (-1 * int(negative))
 
 
 
@@ -251,7 +265,7 @@ class board():
         #index = 0 means that postion one of the index should be iterated and vice versa
         
 
-        for i in range(max(move.vector)):
+        for i in range(self._absmax(move.vector)):
 
             px = equation(i) if index == 0 else i
             py = equation(i) if index == 1 else i
@@ -302,13 +316,11 @@ class board():
         always returns false if no piece is found
         """
         p1, p2 = index
-        if issubclass(type(self.chess_board[p1][p2]), piece) and self.chess_board[p1][p2].team == self.turn % 2:
-            if back == 1:
-                return self.chess_board[p1][p2]
-            else:
-                return True
+        if back == 1:
+            print([p1,p2])
+            return self.chess_board[p1][p2]
         else:
-            return False
+            return bool(self.chess_board[p1][p2])
         
     def _distance(self, vector:list):
         """
@@ -333,22 +345,23 @@ class board():
         If path_back = 1: returns the function that matched the vector or outputs 0 if none found
         """
 
-        for path in direct.xmovement:
-            if path(move.vector[1]) == move.vector[0]:
-                if self._distance(move.vector) <= direct.distance:
-                    if path_back == 1:
-                        return path
-                    return True
-    
+        if direct.xxmovement == [] and direct.xymovement == [] or move.exe == False:
+            for path in direct.xmovement:
+                if path(move.vector[1]) == move.vector[0]:
+                    if self._distance(move.vector) <= direct.distance:
+                        if path_back == 1:
+                            return path
+                        return True
+        
 
-        for path in direct.ymovement:
-            if path(move.vector[0]) == move.vector[1]:
-                if self._distance(move.vector) <= direct.distance:
-                    if path_back == 1:
-                        return path
-                    return True
+            for path in direct.ymovement:
+                if path(move.vector[0]) == move.vector[1]:
+                    if self._distance(move.vector) <= direct.distance:
+                        if path_back == 1:
+                            return path
+                        return True
             
-        if move.exe == 1:
+        else:
             for path in direct.xxmovement:
                 if path(move.vector[1]) == move.vector[0]:
                     if self._distance(move.vector) <= direct.distance:
