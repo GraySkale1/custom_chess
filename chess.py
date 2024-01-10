@@ -162,6 +162,13 @@ class board():
         p = self.piece_pos.index(move.start)
         self.piece_pos[p] = [t1,t2] # updates position of piece on piece list
 
+        #remove duplicate elements
+        temp = []
+        for element in self.piece_pos:
+            if element not in temp:
+                temp.append(element)
+
+        self.piece_pos = temp
         
 
         self.turn += 1
@@ -223,9 +230,10 @@ class board():
         
         return final
     
-    def _absmax(self, iterable:list):
+    def _absmax(self, iterable:list, sign:bool=False):
         """
-        Returns the item with maximum magnitude
+        Returns the item with maximum magnitude as positive value \n
+        sign = true means that it returns the sign of the value
         """
         negative = False
         w_max = 0
@@ -237,7 +245,11 @@ class board():
                 else:
                     negative = False
 
-        return w_max * (-1 * int(negative))
+        if sign == True:
+            if negative == True:
+                return -1
+            return 1
+        return w_max
 
 
 
@@ -245,9 +257,10 @@ class board():
         """
         Checks if there is a piece between movement
         """
+        target = self._devectorise(move.start, move.vector)
+        possible_piece = self._lookup(target, back=1)
+
         if obj.jump == True:
-            target = self._devectorise(move.start, move.vector)
-            possible_piece = self._lookup(target, back=1)
             if possible_piece == 0:
                 return True
             else:
@@ -264,13 +277,14 @@ class board():
 
         #index = 0 means that postion one of the index should be iterated and vice versa
         
-
-        for i in range(self._absmax(move.vector)):
+        end = self._absmax(move.vector)
+        it = self._absmax(move.vector, sign=True)
+        for i in range(0, end * it, it):
 
             px = equation(i) if index == 0 else i
             py = equation(i) if index == 1 else i
 
-            if px >= 8 or py >= 8:
+            if abs(px) >= 8 or abs(py) >= 8:
                 continue
 
             pos = [sum(x) for x in zip([px,py], move.start)]
@@ -281,7 +295,10 @@ class board():
                     obsticles += 1
         
         if obsticles == 0:
-            return True
+            if possible_piece != 0:
+                return possible_piece.team ^ obj.team
+            else:
+                return True
         else:
             return False
 
@@ -347,7 +364,7 @@ class board():
 
         if direct.xxmovement == [] and direct.xymovement == [] or move.exe == False:
             for path in direct.xmovement:
-                if path(move.vector[1]) == move.vector[0]:
+                if path(move.vector[0]) == move.vector[1]:
                     if self._distance(move.vector) <= direct.distance:
                         if path_back == 1:
                             return path
@@ -355,7 +372,7 @@ class board():
         
 
             for path in direct.ymovement:
-                if path(move.vector[0]) == move.vector[1]:
+                if path(move.vector[1]) == move.vector[0]:
                     if self._distance(move.vector) <= direct.distance:
                         if path_back == 1:
                             return path
