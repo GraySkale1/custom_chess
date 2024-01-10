@@ -230,22 +230,14 @@ class board():
         
         return final
     
-    def _absmax(self, iterable:list, sign:bool=False):
+    def _sign(self, value:int):
         """
-        Returns the item with maximum magnitude as positive value \n
-        sign = true means that it returns the sign of the value
+        returns 1 if int is positive and -1 otherwise \n value = 0 returns 1
         """
-        negative = False
-        w_max = 0
-        for it in iterable:
-            if abs(it) >= abs(w_max):
-                w_max = it
-
-        if sign == True:
-            if negative == True:
-                return -1
+        if -value > value:
+            return -1
+        else:
             return 1
-        return w_max
 
 
 
@@ -273,8 +265,8 @@ class board():
 
         #index = 0 means that postion one of the index should be iterated and vice versa
         
-        end = self._absmax(move.vector)
-        it = self._absmax(move.vector, sign=True)
+        end = move.vector[1-index]
+        it = self._sign(end) # gives sign of end
         for i in range(0, end, it):
 
             px = equation(i) if index == 0 else i
