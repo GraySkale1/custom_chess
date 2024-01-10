@@ -238,12 +238,8 @@ class board():
         negative = False
         w_max = 0
         for it in iterable:
-            if abs(it) > w_max:
-                w_max = abs(it)
-                if abs(it) > it:
-                    negative = True
-                else:
-                    negative = False
+            if abs(it) >= abs(w_max):
+                w_max = it
 
         if sign == True:
             if negative == True:
@@ -279,7 +275,7 @@ class board():
         
         end = self._absmax(move.vector)
         it = self._absmax(move.vector, sign=True)
-        for i in range(0, end * it, it):
+        for i in range(0, end, it):
 
             px = equation(i) if index == 0 else i
             py = equation(i) if index == 1 else i
@@ -364,7 +360,7 @@ class board():
 
         if direct.xxmovement == [] and direct.xymovement == [] or move.exe == False:
             for path in direct.xmovement:
-                if path(move.vector[0]) == move.vector[1]:
+                if path(move.vector[1]) == move.vector[0]:
                     if self._distance(move.vector) <= direct.distance:
                         if path_back == 1:
                             return path
@@ -372,7 +368,7 @@ class board():
         
 
             for path in direct.ymovement:
-                if path(move.vector[1]) == move.vector[0]:
+                if path(move.vector[0]) == move.vector[1]:
                     if self._distance(move.vector) <= direct.distance:
                         if path_back == 1:
                             return path
