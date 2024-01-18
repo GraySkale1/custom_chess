@@ -8,7 +8,7 @@ display = pyglet.canvas.Display()
 screen = display.get_default_screen()
 
 WIDTH = 1000
-HEIGHT = 500
+HEIGHT = 1000
 
 game_sprites = []
 
