@@ -322,7 +322,6 @@ class board():
         """
         p1, p2 = index
         if back == 1:
-            print([p1,p2])
             return self.chess_board[p1][p2]
         else:
             return bool(self.chess_board[p1][p2])

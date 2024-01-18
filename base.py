@@ -53,3 +53,10 @@ class King(piece):
         self.ymovement = [lambda y: 0]
         self.distance = 1.5
         self.identifier = 'k'
+
+    def on_movement(self, board_class):
+        pass
+        #change king self.distance to large number
+        #check if king can move to space next to either rook
+        #then check that that rook hasn't moved
+        #return that move if conditions are true (tick validated flag)

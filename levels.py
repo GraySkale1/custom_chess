@@ -22,11 +22,3 @@ def background(window:pyglet.window, img_PATH, fit=0):
 
     return move(window, back_sprite, [0.5,0.5])
 
-
-class menu():
-    def __init__(self, window):
-        back_sprite = background(window, "assets\\backgrounds\\menu.png")
-        back_sprite = levels.background(game, "assets\\backgrounds\\menu.png")
-        button = pyglet.image.load("assets\\buttons\\menu_play.png")
-        button_sprite = pyglet.sprite.Sprite(button)
-

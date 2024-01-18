@@ -1,14 +1,13 @@
 import piece_class
 import math
 import pyglet
-from pyglet.window import key
 import levels
 import chess
 
 display = pyglet.canvas.Display()
 screen = display.get_default_screen()
 
-WIDTH = 500
+WIDTH = 1000
 HEIGHT = 500
 
 game_sprites = []
@@ -82,7 +81,6 @@ def on_mouse_press(x, y, button, modifiers):
         else:
             exe = 0
 
-        print(game_board.turn)
         vec = game_board._vector(past, pixel_to_index([x,y]))
         if issubclass(type(past_piece), piece_class.piece):
             move = chess.movement(start=past, vector=vec, exe=exe, team=(past_piece.team))
@@ -97,9 +95,8 @@ def on_mouse_press(x, y, button, modifiers):
     past_piece = current_piece
     increment += 1
     
-    print(c_piece, end=', ')
+
     past = pixel_to_index([x,y])
-    print(past)
     
 
 
