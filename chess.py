@@ -1,5 +1,4 @@
 import math
-import base
 from piece_class import piece
 
 class ChessException(Exception):
@@ -10,12 +9,19 @@ class ChessException(Exception):
 
 class movement():
     """describes a desired movement as a starting position and vector expressed in index form"""
-    def __init__(self, start:list, vector:list, exe:bool, team:bool):
+    def __init__(self, start:list, vector:list, exe:bool, team:bool, extra:'movement' = None):
         self.start = start
         self.vector = vector
+        self.extra = [self] + extra if extra != None else [self]
         self.team = team
         self.exe = exe #if move takes a piece or not
         self.validated = False
+
+    def Extra(self):
+        """Generator function that returns all subsequent moves that should be run on same turn"""
+        for move in self.extra:
+            yield move
+        
 
 class board():
     def __init__(self):
@@ -125,10 +131,11 @@ class board():
         self.place('Rh8',1)
 
 
-    def execute(self, move:movement):
+    def execute(self, full_move:movement):
         """Executes movement object on board \n
         If move is immpossible, returns false, otherwise returns true
         """
+        for move in [full_move, full_move.ex]
         if move.validated != True:
             move.validated = self.movement_val(move)
 
@@ -170,12 +177,28 @@ class board():
 
         self.piece_pos = temp
         
-
         self.turn += 1
 
         return True
     
-
+    def win_condition(self, extra:bool = False):
+        """returns true if game should end or returns winner str if extra flag is true. 
+        \notherwise returns false"""
+        king_list = []
+        for position in self._board_iterate():
+            if position != 0 and position.identifier == 'k':
+                king_list.append(position.team)
+        
+        if len(king_list) == 1:
+            if extra == False:
+                return True
+            
+            if king_list[0] == 0:
+                return 'White'
+            else:
+                return 'Black'
+            
+        return False
     
     def target_lookup(self, target:list, piece_obj:piece = piece):
         """

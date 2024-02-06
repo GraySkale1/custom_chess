@@ -5,6 +5,7 @@ import chess
 
 
 class main_game():
+    """contains all the logic for rendering the chess game"""
     def __init__(self, screen:pyglet.window.Window):
         self.screen = screen
         self.increment = 0
@@ -23,8 +24,8 @@ class main_game():
         #makes highlight tile correct size
         highlight = pyglet.image.load('assets\\misc\\yellow.jpg')
         self.highlight = pyglet.sprite.Sprite(highlight)
-        highlight.scale_x = math.ceil(self.spacing_scale) / highlight.width
-        highlight.scale_y = math.ceil(self.spacing_scale) / highlight.height
+        self.highlight.scale_x = math.ceil(self.spacing_scale) / highlight.width
+        self.highlight.scale_y = math.ceil(self.spacing_scale) / highlight.height
 
         self.piece_add()
 
@@ -68,8 +69,10 @@ class main_game():
     
 
     def on_draw(self):
-        return self.sprites
-
+        """generator function that returns all sprites to be rendered"""
+        for sprite in self.sprites:
+            yield sprite
+        
     def background(self, img_PATH, fit=0):
         """Returns sprite correctly sized to fit window\n
         fit = 1 means that scale will not be changed"""
