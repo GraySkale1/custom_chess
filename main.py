@@ -1,9 +1,6 @@
-import piece_class
-import assets.Scenes.game_scene as chess_game
-import assets.Scenes.end_scene as end_scene
+import game_scene as chess_game
+import end_scene as end_scene
 import pyglet
-import levels
-import chess
 
 display = pyglet.canvas.Display()
 screen = display.get_default_screen()

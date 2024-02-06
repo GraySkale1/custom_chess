@@ -1,5 +1,6 @@
 import math
 from piece_class import piece
+import base
 
 class ChessException(Exception):
     def __init__(self, message):
@@ -135,14 +136,14 @@ class board():
         """Executes movement object on board \n
         If move is immpossible, returns false, otherwise returns true
         """
-        for move in [full_move, full_move.ex]
-        if move.validated != True:
-            move.validated = self.movement_val(move)
+        for move in [full_move] +  full_move.extra:
+            if move.validated != True:
+                move.validated = self.movement_val(move)
 
 
-        if move.validated != True:
-            print("Invalid chess move")
-            return False
+            if move.validated != True:
+                print("Invalid chess move")
+                return False
         
         temp = self.chess_board[move.start[0]][move.start[1]]
 
