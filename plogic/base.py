@@ -1,4 +1,4 @@
-from piece_class import piece
+from plogic.piece_class import piece
 
 
             

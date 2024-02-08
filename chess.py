@@ -1,6 +1,6 @@
 import math
-from piece_class import piece
-import base
+from plogic.piece_class import piece
+import plogic.base as base
 
 class ChessException(Exception):
     def __init__(self, message):

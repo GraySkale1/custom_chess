@@ -1,4 +1,4 @@
-import piece_class
+import plogic.piece_class as piece_class
 import math
 import pyglet
 import chess
